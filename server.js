@@ -1,18 +1,16 @@
+/* eslint-disable import/order */
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
-const io = require("socket.io");
-const http = require("http");
 const fccTesting = require("./freeCodeCamp/fcctesting.js");
 const myDB = require("./connection");
 const routes = require("./routes");
 const auth = require("./auth");
 
 const app = express();
-
-const httpServer = http.createServer(app);
-io(httpServer);
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
 
 fccTesting(app); // For FCC testing purposes
 app.use("/public", express.static(`${process.cwd()}/public`));

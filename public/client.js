@@ -1,4 +1,6 @@
 $(document).ready(function () {
+  /* global io */
+  const socket = io();
   // Form submittion with new message in field with id 'm'
   $("form").submit(function () {
     const messageToSend = $("#m").val();
@@ -7,6 +9,3 @@ $(document).ready(function () {
     return false; // prevent form submit from refreshing page
   });
 });
-
-/* global io */
-const socket = io();
