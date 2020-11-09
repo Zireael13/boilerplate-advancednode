@@ -31,8 +31,11 @@ app.use(passport.session());
 
 myDB(async (client) => {
   const myDataBase = await client.db("database").collection("users");
+  let currentUsers = 0;
 
   io.on("connection", (socket) => {
+    currentUsers += 1;
+    io.emit("user count", currentUsers);
     console.log("A user has connected");
   });
 
