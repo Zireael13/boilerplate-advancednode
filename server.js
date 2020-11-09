@@ -14,7 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("view engine", "pug");
 
 app.route("/").get((req, res) => {
-  res.render("pug");
+  res.render("pug", {
+    message: "Please login",
+    title: "Hello",
+  });
 });
 
 app.listen(process.env.PORT || 3000, () => {
