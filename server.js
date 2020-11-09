@@ -7,7 +7,11 @@ const fccTesting = require("./freeCodeCamp/fcctesting.js");
 const myDB = require("./connection");
 const routes = require("./routes");
 const auth = require("./auth");
+const MongoStore = require("connect-mongo")(session);
+const passportSocketIo = require("passport.socketio");
+const cookieParser = require("cookie-parser");
 
+const store = new MongoStore({ url: process.env.MONGO_URI });
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
@@ -23,8 +27,24 @@ app.use(
     resave: true,
     saveUninitialized: true,
     cookie: { secure: false },
+    store,
+    key: "express.sid",
   })
 );
+
+function onAuthorizeSucess(data, accept) {
+  console.log("successful connection to socket.io");
+  accept(null, true);
+}
+
+function onAuthorizeFail(data, message, error, accept) {
+  if (error) {
+    throw new Error(message);
+  }
+  console.log("failed connection to socket.io");
+
+  accept(null, false);
+}
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -33,13 +53,24 @@ myDB(async (client) => {
   const myDataBase = await client.db("database").collection("users");
   let currentUsers = 0;
 
+  io.use(
+    passportSocketIo.authorize({
+      cookieParser,
+      key: "express.sid",
+      secret: process.env.SESSION_SECRET,
+      store,
+      success: onAuthorizeSucess,
+      fail: onAuthorizeFail,
+    })
+  );
+
   io.on("connection", (socket) => {
     currentUsers += 1;
     io.emit("user count", currentUsers);
-    console.log("A user has connected");
+    console.log(`user ${socket.request.user.name} connected`);
 
     socket.on("disconnect", () => {
-      console.log("User has disconnected");
+      console.log(`user ${socket.request.user.name} disconnected`);
       currentUsers -= 1;
       io.emit("user count", currentUsers);
     });
