@@ -1,7 +1,9 @@
+/* eslint-disable */
+
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
-const { ObjectID } = require("mongodb");
+const ObjectID = require("mongodb").ObjectID;
 const GitHubStrategy = require("passport-github").Strategy;
 
 module.exports = function (app, myDataBase) {
@@ -16,8 +18,8 @@ module.exports = function (app, myDataBase) {
   });
   passport.use(
     new LocalStrategy(function (username, password, done) {
-      myDataBase.findOne({ username }, function (err, user) {
-        console.log(`User ${username} attempted to log in.`);
+      myDataBase.findOne({ username: username }, function (err, user) {
+        console.log("User " + username + " attempted to log in.");
         if (err) {
           return done(err);
         }
