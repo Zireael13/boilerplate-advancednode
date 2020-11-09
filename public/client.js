@@ -12,7 +12,15 @@ $(document).ready(function () {
   $("form").submit(function () {
     const messageToSend = $("#m").val();
 
+    socket.emit("chat message", messageToSend);
+
     $("#m").val("");
     return false; // prevent form submit from refreshing page
+  });
+
+  socket.on("chat message", (data) => {
+    $("#messages").append(
+      $("<li>").html(`<p> ${data.name}: ${data.message} </p>`)
+    );
   });
 });
