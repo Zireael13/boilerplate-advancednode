@@ -3,7 +3,6 @@ const LocalStrategy = require("passport-local");
 const bcrypt = require("bcrypt");
 const { ObjectID } = require("mongodb");
 const GitHubStrategy = require("passport-github").Strategy;
-require("dotenv").config();
 
 module.exports = function (app, myDataBase) {
   passport.serializeUser((user, done) => {
@@ -39,7 +38,7 @@ module.exports = function (app, myDataBase) {
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
         callbackURL:
-          "https://fathomless-peak-29481.herokuapp.com/auth/github/callback",
+          "https://boilerplate-advancednode.your-username.repl.co/auth/github/callback",
       },
       function (accessToken, refreshToken, profile, cb) {
         console.log(profile);
